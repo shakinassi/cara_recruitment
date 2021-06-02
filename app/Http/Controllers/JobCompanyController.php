@@ -23,6 +23,7 @@ class JobCompanyController extends Controller
         $menu = Menu::get();
         $current_menu = 6;
         $company = Company::latest()->paginate(5);
+       
         return view('company.index', compact('company', 'menu', 'current_menu'));
     }
 
@@ -31,48 +32,35 @@ class JobCompanyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public funtion insert_logo(Request $request)
+    // {
+
+    // }
     public function insert_logo(Request $request)
     {
-     
-        $this->validate($request, [
-        'company_logo' => 'required|image|max:2048',
-        'company' => 'required',
-                            
-        ]);
-                            
-         $company_logo=new Company();
-         $input = $request->all();
-                            
-        if ($request->has('company_logo')) 
-        {
-             // Get image file
-             $file = $request->file('company_logo');
-             $text = $file->getClientOriginalExtension();
-             // Make a image name based on user name and  timestamp
-             $name = $input['company'];
-             // Define folder path
-             $folder = '/uploads/images/';
+        $company = new Company();
 
-             $filenameWithExt = $request->file('company_logo')->getClientOriginalName ();
-             // Get Filename
-             $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
-             // Get just Extension
-             $extension = $request->file('company_logo')->getClientOriginalExtension();
-             // Filename To store
-             $fileNameToStore = $folder.$filename. '_'. time().'.'.$extension;
-             //Upload Image
-             $path = $request->file('company_logo')->storeAs('public/', $fileNameToStore);
-             $company_logo->company=$name;
-             $company_logo->company_logo=$fileNameToStore;
-             $company_logo->save();
-            
-        }
-                            
-        return back();
-                            
-                           
+        $company->company    = request('company');
+        $company->company_logo    = request('company_logo|file|image|max:10,485,760');
+
+
+        // uploading image file to database
+       if
+       ($file = $request->hasFile('company_logo')) {
+           $file = $request->file('company_logo');
+
+           $filename = time() . '.' .$file->getClientOriginalName();
+           $destinationPath = public_path('/uploads/images/');
+
+           $file->move($destinationPath, $filename);
+           $company->company_logo = $filename;
+       }
+       $company->save();
+       return back();
+
     }
 
+    
     /**
      * Display the specified resource.
      *
@@ -115,12 +103,18 @@ class JobCompanyController extends Controller
     public function update(Request $request, $id)
 
     {
+    
         $this->validate($request, [
             'company_logo' => 'required|image|max:2048',
             'company' => 'required',
 
         ]);
-        $company = Company::find($id);
+    //    dd(123);
+        $company = Company::find($id)->first();
+        // dd($company);
+    
+
+        // $company = Company::where(['companies.id' => $id])->first();
         if($request->file != '')
         {
             $path = public_path().'/uploads/images/';
@@ -139,6 +133,7 @@ class JobCompanyController extends Controller
             return redirect()->route('company.index');
 
         }
+       
 
     }
 
