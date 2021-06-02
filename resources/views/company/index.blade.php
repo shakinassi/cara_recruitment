@@ -23,7 +23,7 @@
                         <div class="font-medium">Admin</div>
                         <div class="text-xs text-theme-41 dark:text-gray-600">Hafeez Handsome</div>
                     </div>
-                    {{-- <div class="p-2 border-t border-theme-40 dark:border-dark-3">
+                    <div class="p-2 border-t border-theme-40 dark:border-dark-3">
                         <a href="" onclick="event.preventDefault();
                         document.getElementById('logout-form').submit();"
                             class="flex items-center block p-2 transition duration-300 ease-in-out hover:bg-theme-1 dark:hover:bg-dark-3 rounded-md">
@@ -31,7 +31,7 @@
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
-                    </div> --}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -45,7 +45,46 @@
     <div class="grid grid-cols-12 gap-6 mt-5">
         <div class="intro-y col-span-12 flex flex-wrap sm:flex-no-wrap items-center mt-2">
             <a href="javascript:;" data-toggle="modal" data-target="#button-modal-preview" class="button text-white bg-theme-1 shadow-md mr-2">Add New Company</a>
-            @include('company.create')
+            <div class="modal" id="button-modal-preview">
+                <div class="modal__content relative"> <a data-dismiss="modal" href="javascript:;" class="absolute right-0 top-0 mt-3 mr-3"> <i data-feather="x" class="w-8 h-8 text-gray-500"></i> </a>
+                    <div class="intro-y flex items-center p-5">
+                        <h2 class="text-lg font-medium mr-auto">
+                            Add New Company
+                        </h2>
+                    </div>
+                    <form method="post" action="{{ route('insert_logo') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="intro-y box p-5">
+                        <div class="mt-3">
+                            <label>Company Logo</label>
+                            <div class="mt-2">
+                                <div class="mt-2">
+                                    <div class="row mt-4">
+                                        <div class="col-md-8">
+                                            <input type="file" name="company_logo"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label>Company Name</label>
+                            <input type="text" class="input w-full border mt-2 form-control" name="company" placeholder="Company Name">
+                        </div>
+                        <div class="text-right mt-5">
+                            <button type="button" data-dismiss="modal"
+                                class="button w-24 border dark:border-dark-5 text-gray-700 dark:text-gray-300 mr-1">Cancel</button>
+                            <button type="submit" class="button w-24 bg-theme-1 text-white">Save</button>
+                            
+
+                            
+
+                        </div>
+                    </div>
+                    </form>
+                    
+                </div>
+            </div>
            
         </div>
           <!-- BEGIN: Data List -->
@@ -58,11 +97,14 @@
                         <th class="whitespace-no-wrap">Action</th>
                     </tr>
                 </thead>
-                <tbody>@foreach ($company as $jobcompany)
+                <tbody>
+                    @foreach ($company as $jobcompany)
+                    {{-- {{dd($company)}} --}}
                     <tr class="intro-x">
                         <td class="w-40">
+                            
                             <img style="height:100px;width:170px"
-                            src="{{ asset('/storage'.$jobcompany->company_logo) }}"></img>
+                            src="{{ asset('/uploads/images/'.$jobcompany->company_logo) }}"></img>
                             
                         </td>
                         <td class="w-80">
@@ -72,14 +114,19 @@
                         <td class="table-report__action w-56">
                             <div class="flex justify-center items-center">
                                 <a href="javascript:;" data-toggle="modal" data-target="#delete-modal-preview" class="flex items-center text-theme-6 mr-3"><i data-feather="trash-2" class="w-4 h-4 mr-1"></i> Delete </a>
-                                
-                
-                                <a href="javascript:;" data-toggle="modal" data-target="#header-footer-modal-preview" class="flex items-center mr-5"> <i data-feather="edit" class="w-4 h-4 mr-1"></i> Edit </a>
+                                <a href="company_edit/{{$jobcompany->id}}" data-toggle="modal" data-target="#header-footer-modal-preview" class="flex items-center mr-5"> <i data-feather="edit" class="w-4 h-4 mr-1"></i> Edit </a>
+                                {{-- <a href="javascript:;" data-toggle="modal" onclick="company_edit/{{$jobcompany->id}}" data-target="#header-footer-modal-preview" class="flex items-center mr-5"> <i data-feather="edit" class="w-4 h-4 mr-1"></i> Edit </a> --}}
                                 @include('company.edit')
+                                {{-- <a href="/shop/{{$value->id}}/" > --}}
+                                    {{-- <a href="company_edit/{{$jobcompany->id}}" data-toggle="modal" data-target="#header-footer-modal-preview" class="flex items-center mr-5"><i data-feather="edit" class="w-4 h-4 mr-1"></i> Edit </a> --}}
+
+                                {{-- <a href="javascript:;" data-toggle="modal" data-target="#header-footer-modal-preview" class="flex items-center mr-5" onclick="company_edit/{{$jobcompany->id}}"> <i data-feather="edit" class="w-4 h-4 mr-1"></i> Edit </a> --}}
                             </div>
                         </td>
                     </tr>
-                </tbody>@endforeach
+                    @endforeach
+                </tbody>
+                
             </table>
         </div>
         <!-- END: Data List -->
@@ -112,23 +159,6 @@
                 <option>50</option>
             </select>
         </div>
-        <!-- END: Pagination -->
-
-         <!-- BEGIN: Delete Confirmation Modal -->
-         {{-- <div class="modal" id="delete-confirmation-modal">
-            <div class="modal__content">
-                <div class="p-5 text-center">
-                    <i data-feather="x-circle" class="w-16 h-16 text-theme-6 mx-auto mt-3"></i> 
-                    <div class="text-3xl mt-5">Are you sure?</div>
-                    <div class="text-gray-600 mt-2">Do you really want to delete these records? This process cannot be undone.</div>
-                </div>
-                <div class="px-5 pb-8 text-center">
-                    <button type="button" data-dismiss="modal" class="button w-24 border text-gray-700 mr-1">Cancel</button>
-                    <button type="button" class="button w-24 bg-theme-6 text-white">Delete</button>
-                </div>
-            </div>
-        </div> --}}
-        <!-- END: Delete Confirmation Modal -->
 
         @foreach ($company as $jobcompany)
                         <div class="modal" id="delete-modal-preview" style="z-index:50;">
@@ -154,7 +184,9 @@
                                     </form>
                                 </div>
                                 @endforeach
+                                
                             </div>
+                        </div>
     </div>
 
 @endsection  
@@ -162,7 +194,13 @@
            
 
 @push('js')
-
+<script>
+    function company_edit(id) {
+      var url = '{{ route("company.edit", ":id") }}';
+      url = url.replace(':id',id);
+      $("#modal-div").load(url);
+   }
+</script>
 @endpush
 
                    
