@@ -1,6 +1,9 @@
-<div class="modal" id="header-footer-modal-preview">
-    <div class="modal__content">
+@foreach ($company as $jobcompany)
 
+<div class="modal" id="header-footer-modal-preview">
+    {{-- @foreach ($company as $jobcompany) --}}
+    <div class="modal__content">
+        
         <div class="intro-y flex items-center p-5">
             <h2 class="text-lg font-medium mr-auto">
                 Edit Company
@@ -8,9 +11,10 @@
         </div>
 
         <form action="{{ route('company.update', $jobcompany->id) }}" method="post">
+            
             @csrf
             @method('PUT')
-            
+
             <div class="intro-y box p-5">
                 <div>
                     <label>Company Logo</label>
@@ -23,7 +27,7 @@
                             </div>
                         </div>
                     </div>
-
+                    {{-- {{dd($jobcompany->id)}} --}}
                     <div class="mt-3">
                         <input type="text" placeholder="Company Name" name="company"
                         class="input w-full border col-span-4 form-control tail-select" value="{{ $jobcompany->company}}">
@@ -36,10 +40,14 @@
                         <button type="submit" class="button w-24 bg-theme-1 text-white">Update</button>
                     </div>
                 </div>
-                </div>
+                
+
             </div>
-
         </form>
-
+        {{-- @endforeach --}}
+    </div>
+        {{-- @endforeach --}}
+{{-- @endforeach --}}
    
 </div>
+@endforeach
